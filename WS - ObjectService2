@@ -1,0 +1,26 @@
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "UB8YVcKd";
+
+    public static void main(String[] args) throws Exception {
+        ObjectService service = new ObjectService();
+        SoapObjectService port = service.getSoapObjectServicePort();
+
+        List<Customer> data = port.requestListCustomer(MSV, QID);
+        List<Customer> customers = new ArrayList<>();
+
+        for (Customer c : data) {
+            if (c.getTotalSpent() > 500 && c.getPurchaseCount() >= 3) {
+                customers.add(c);
+            }
+        }
+
+        port.submitListCustomer(MSV, QID, customers);
+    }
+}
