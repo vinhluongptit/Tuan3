@@ -1,0 +1,23 @@
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "5PszWvJ8";
+
+    public static void main(String[] args) throws Exception {
+        ObjectService service = new ObjectService();
+        SoapObjectService port = service.getSoapObjectServicePort();
+
+        List<EmployeeY> data = port.requestListEmployeeY(MSV, QID);
+
+        Collections.sort(data, (a, b) ->
+            a.getStartDate().compare(b.getStartDate())
+        );
+
+        port.submitListEmployeeY(MSV, QID, data);
+    }
+}
