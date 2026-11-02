@@ -1,0 +1,20 @@
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "XSaerF6r";
+
+
+    public static void main(String[] args) throws Exception{
+            CharacterService service = new CharacterService();
+            SoapCharacterService port = service.getSoapCharacterServicePort();
+            List<Integer> data = port.requestCharacter(MSV, QID);
+            int k = data.get(0) % data.size();
+            Collections.rotate(data, k);
+            port.submitCharacterCharArray(MSV, QID, data);
+    }
+}
