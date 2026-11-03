@@ -1,0 +1,188 @@
+1.WS - CharacterService
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "XSaerF6r";
+
+
+    public static void main(String[] args) throws Exception{
+            CharacterService service = new CharacterService();
+            SoapCharacterService port = service.getSoapCharacterServicePort();
+            List<Integer> data = port.requestCharacter(MSV, QID);
+            int k = data.get(0) % data.size();
+            Collections.rotate(data, k);
+            port.submitCharacterCharArray(MSV, QID, data);
+    }
+}
+
+
+
+2.WS - CharacterService2
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "Ptw4KrmH";
+
+    public static void main(String[] args) throws Exception {
+        CharacterService service = new CharacterService();
+        SoapCharacterService port = service.getSoapCharacterServicePort();
+
+        List<String> data = port.requestStringArray(MSV, QID);
+        Map<Integer, List<String>> groups = new TreeMap<>();
+
+        for (String word : data) {
+            int count = 0;
+            String s = word.toLowerCase();
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                    count++;
+                }
+            }
+
+            if (!groups.containsKey(count)) {
+                groups.put(count, new ArrayList<>());
+            }
+            groups.get(count).add(word);
+        }
+
+        List<String> result = new ArrayList<>();
+
+        for (List<String> group : groups.values()) {
+            Collections.sort(group);
+            result.addAll(group);
+        }
+
+        port.submitCharacterStringArray(MSV, QID, result);
+    }
+}
+
+
+
+3.WS - DataService 
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "aYizVtQX";
+
+    public static int compare(String a, String b) {
+        String ab = a + b;
+        String ba = b + a;
+        return ba.compareTo(ab);
+    }
+
+    public static void main(String[] args) throws Exception{
+            DataService service = new DataService();
+            SoapDataService port = service.getSoapDataServicePort();
+            List<Integer> data = port.getData(MSV, QID);
+            List<String> arr = new ArrayList<>();
+
+            for (int x : data) {
+                arr.add(String.valueOf(x));
+            }
+            Collections.sort(arr, (a, b) -> compare(a, b));
+            String result = String.join("", arr);
+            port.submitDataString(MSV, QID, result);
+
+    }
+}
+
+
+
+4.WS - DataService2
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "iF1dqVej";
+
+
+    public static void main(String[] args) throws Exception{
+            DataService service = new DataService();
+            SoapDataService port = service.getSoapDataServicePort();
+            List<Integer> data = port.getData(MSV, QID);
+            int tot = 0;
+            for(int i = 0; i < data.size(); i++){
+                tot += data.get(i); 
+            }
+            port.submitDataInt(MSV, QID, tot);
+
+    }
+}
+
+
+
+
+5. WS - ObjectService
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "5PszWvJ8";
+
+    public static void main(String[] args) throws Exception {
+        ObjectService service = new ObjectService();
+        SoapObjectService port = service.getSoapObjectServicePort();
+
+        List<EmployeeY> data = port.requestListEmployeeY(MSV, QID);
+
+        Collections.sort(data, (a, b) ->
+            a.getStartDate().compare(b.getStartDate())
+        );
+
+        port.submitListEmployeeY(MSV, QID, data);
+    }
+}
+
+
+
+6.WS - ObjectService2
+package javaapplication3;
+
+import java.util.*;
+import ptit.dblab.judge.network.server.soap.*;
+
+public class JavaApplication3 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "UB8YVcKd";
+
+    public static void main(String[] args) throws Exception {
+        ObjectService service = new ObjectService();
+        SoapObjectService port = service.getSoapObjectServicePort();
+
+        List<Customer> data = port.requestListCustomer(MSV, QID);
+        List<Customer> customers = new ArrayList<>();
+
+        for (Customer c : data) {
+            if (c.getTotalSpent() > 500 && c.getPurchaseCount() >= 3) {
+                customers.add(c);
+            }
+        }
+
+        port.submitListCustomer(MSV, QID, customers);
+    }
+}
