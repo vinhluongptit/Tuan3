@@ -1,0 +1,63 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication6;
+import RMI.ByteService;
+import java.rmi.registry.*;
+import java.util.*;
+
+
+public class JavaApplication6 {
+
+    public static void main(String[] args) throws Exception{
+        String studentCode = "B23DCCN932";
+        String qCode = "tnx1iWr4";
+        
+        Registry registry = LocateRegistry.getRegistry("36.50.135.242", 1099);
+        ByteService service = (ByteService) registry.lookup("RMIByteService");
+        byte[] data = service.requestData(studentCode, qCode);
+        byte minValue = data[0];
+        int minCount = data.length + 1;
+
+        for (int i = 0; i < data.length; i++) {
+
+            int count = 0;
+
+            // Đếm số lần xuất hiện của data[i]
+            for (int j = 0; j < data.length; j++) {
+
+                if (data[i] == data[j]) {
+                    count++;
+                }
+            }
+
+            // Nếu xuất hiện ít hơn thì cập nhật
+            if (count < minCount) {
+                minCount = count;
+                minValue = data[i];
+            }
+        }
+        
+        // 4. Tạo kết quả
+        byte[] result = {minValue, (byte) minCount};
+
+        // 5. Gửi kết quả lên server
+        service.submitData(studentCode, qCode, result);
+    }
+    
+}
+
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package RMI;
+import java.rmi.*;
+
+
+public interface ByteService extends Remote {
+    public byte[] requestData(String studentCode, String qCode) throws RemoteException;
+    public void submitData(String studentCode, String qCode, byte[] data) throws RemoteException;
+}
