@@ -1,0 +1,378 @@
+1. RMI Byte
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication6;
+import RMI.ByteService;
+import java.rmi.registry.*;
+import java.util.*;
+
+
+public class JavaApplication6 {
+
+    public static void main(String[] args) throws Exception{
+        String studentCode = "B23DCCN932";
+        String qCode = "tnx1iWr4";
+        
+        Registry registry = LocateRegistry.getRegistry("36.50.135.242", 1099);
+        ByteService service = (ByteService) registry.lookup("RMIByteService");
+        byte[] data = service.requestData(studentCode, qCode);
+        byte minValue = data[0];
+        int minCount = data.length + 1;
+
+        for (int i = 0; i < data.length; i++) {
+
+            int count = 0;
+
+            // Đếm số lần xuất hiện của data[i]
+            for (int j = 0; j < data.length; j++) {
+
+                if (data[i] == data[j]) {
+                    count++;
+                }
+            }
+
+            // Nếu xuất hiện ít hơn thì cập nhật
+            if (count < minCount) {
+                minCount = count;
+                minValue = data[i];
+            }
+        }
+        
+        // 4. Tạo kết quả
+        byte[] result = {minValue, (byte) minCount};
+
+        // 5. Gửi kết quả lên server
+        service.submitData(studentCode, qCode, result);
+    }
+    
+}
+
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package RMI;
+import java.rmi.*;
+
+
+public interface ByteService extends Remote {
+    public byte[] requestData(String studentCode, String qCode) throws RemoteException;
+    public void submitData(String studentCode, String qCode, byte[] data) throws RemoteException;
+}
+
+
+2.RMI - Character
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication6;
+import RMI.CharacterService;
+import java.net.URI;
+import java.rmi.registry.*;
+import java.util.*;
+
+
+public class JavaApplication6 {
+
+    public static void main(String[] args) throws Exception{
+        String studentCode = "B23DCCN932";
+        String qcode = "8tTsDCLB";
+        
+        Registry registry = LocateRegistry.getRegistry("36.50.135.242", 1099);
+        CharacterService service = (CharacterService) registry.lookup("RMICharacterService");
+        String data = service.requestCharacter(studentCode, qcode);
+        String result = new URI(null, null, data, null).toASCIIString();
+        service.submitCharacter(studentCode, qcode, result);
+    }
+    
+}
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package RMI;
+import java.rmi.*;
+
+public interface CharacterService extends Remote {
+    public String requestCharacter(String studentCode, String qCode) throws RemoteException;
+    public void submitCharacter(String studentCode, String qCode, String strSubmit) throws RemoteException;
+}
+
+
+3.RMI - Character 2
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication6;
+import RMI.CharacterService;
+import java.net.URI;
+import java.rmi.registry.*;
+import java.util.*;
+
+
+public class JavaApplication6 {
+
+    public static void main(String[] args) throws Exception{
+        String studentCode = "B23DCCN932";
+        String qcode = "U5ArQl8s";
+        
+        Registry registry = LocateRegistry.getRegistry("36.50.135.242", 1099);
+        CharacterService service = (CharacterService) registry.lookup("RMICharacterService");
+        String data = service.requestCharacter(studentCode, qcode);
+        int number = Integer.parseInt(data.trim());
+
+
+        // 3. Chuyển số thập phân sang số La Mã
+        int[] values = {
+            1000, 900, 500, 400, 100, 90, 50,
+            40, 10, 9, 5, 4, 1
+        };
+
+        String[] roman = {
+            "M", "CM", "D", "CD", "C", "XC", "L",
+            "XL", "X", "IX", "V", "IV", "I"
+        };
+
+        String result = "";
+
+        for (int i = 0; i < values.length; i++) {
+
+            while (number >= values[i]) {
+                result += roman[i];
+                number -= values[i];
+            }
+        }
+        service.submitCharacter(studentCode, qcode, result);
+    }
+    
+}
+
+
+
+4.Data
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication6;
+import RMI.DataService;
+import java.net.URI;
+import java.rmi.registry.*;
+import java.util.*;
+
+
+public class JavaApplication6 {
+
+    public static void main(String[] args) throws Exception{
+        String studentCode = "B23DCCN932";
+        String qcode = "xluj2DeT";
+        
+        Registry registry = LocateRegistry.getRegistry("36.50.135.242", 1099);
+        DataService service = (DataService) registry.lookup("RMIDataService");
+        int[] data = (int[]) service.requestData(studentCode, qcode);
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < data.length; i++) {
+
+            if (i == 0) {
+                // Phần tử đầu
+                if (data.length == 1 || data[i] > data[i + 1]) {
+                    result.add(i + 1);
+                }
+
+            } else if (i == data.length - 1) {
+                // Phần tử cuối
+                if (data[i] > data[i - 1]) {
+                    result.add(i + 1);
+                }
+
+            } else {
+                // Phần tử ở giữa
+                if (data[i] > data[i - 1] && data[i] > data[i + 1]) {
+                    result.add(i + 1);
+                }
+            }
+        }
+        
+        service.submitData(studentCode, qcode, result);
+    }
+    
+}
+
+
+5.RMI - Data 2
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication6;
+import RMI.DataService;
+import java.net.URI;
+import java.rmi.registry.*;
+import java.util.*;
+
+
+public class JavaApplication6 {
+
+    public static void main(String[] args) throws Exception{
+        String studentCode = "B23DCCN932";
+        String qcode = "M3eRwWeJ";
+        
+        Registry registry = LocateRegistry.getRegistry("36.50.135.242", 1099);
+        DataService service = (DataService) registry.lookup("RMIDataService");
+        String data = (String) service.requestData(studentCode, qcode);
+        String[] parts = data.split(",");
+
+        int n = parts.length;
+        double[] arr = new double[n];
+        double sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            arr[i] = Double.parseDouble(parts[i].trim());
+            sum += arr[i];
+        }
+
+        double avg = sum / n;
+
+        double total = 0;
+        for (double x : arr) {
+            total += (x - avg) * (x - avg);
+        }
+        double stddev = Math.sqrt(total / n);
+
+        Arrays.sort(arr);
+        int index = (int) Math.ceil(n * 0.95) - 1;
+        double p95 = arr[index];
+
+        String result = String.format(
+                Locale.US,
+                "average=%.2f;stddev=%.2f;p95=%.2f",
+                avg, stddev, p95
+        );
+        
+        service.submitData(studentCode, qcode, result);
+    }
+    
+}
+
+
+6.RMI-Object
+package javaapplication6;
+
+import RMI.*;
+import java.rmi.registry.*;
+
+public class JavaApplication6 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "3I1G4NKz";
+
+    public static void main(String[] args) throws Exception {
+        Registry registry =
+                LocateRegistry.getRegistry("36.50.135.242", 1099);
+        ObjectService service =
+                (ObjectService) registry.lookup("RMIObjectService");
+
+        TicketSla t = (TicketSla) service.requestObject(MSV, QID);
+
+        String p = t.getPriority();
+        int hours = t.getOpenedHoursAgo();
+        int limit = 72;
+
+        switch (p) {
+            case "CRITICAL": limit = 2; break;
+            case "HIGH": limit = 8; break;
+            case "MEDIUM": limit = 24; break;
+            case "LOW": limit = 72; break;
+        }
+
+        t.setBreached(hours > limit);
+
+        if (!t.isBreached()) {
+            t.setAction("MONITOR");
+        } else if (p.equals("CRITICAL") || hours > 96) {
+            t.setAction("ESCALATE_L2");
+        } else {
+            t.setAction("ESCALATE_L1");
+        }
+
+        service.submitObject(MSV, QID, t);
+    }
+}
+
+
+
+// TicketsSla.java
+
+
+package RMI;
+
+import java.io.Serializable;
+
+public class TicketSla implements Serializable {
+
+    private static final long serialVersionUID = 20260517L;
+
+    private String ticketId;
+    private String priority;
+    private int openedHoursAgo;
+    private boolean breached;
+    private String action;
+
+    public TicketSla() {}
+
+    public TicketSla(String ticketId, String priority, int openedHoursAgo) {
+        this.ticketId = ticketId;
+        this.priority = priority;
+        this.openedHoursAgo = openedHoursAgo;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public int getOpenedHoursAgo() {
+        return openedHoursAgo;
+    }
+
+    public void setOpenedHoursAgo(int openedHoursAgo) {
+        this.openedHoursAgo = openedHoursAgo;
+    }
+
+    public boolean isBreached() {
+        return breached;
+    }
+
+    public void setBreached(boolean breached) {
+        this.breached = breached;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    
+}
