@@ -1,0 +1,112 @@
+package javaapplication6;
+
+import RMI.*;
+import java.rmi.registry.*;
+
+public class JavaApplication6 {
+
+    public static final String MSV = "B23DCCN932";
+    public static final String QID = "3I1G4NKz";
+
+    public static void main(String[] args) throws Exception {
+        Registry registry =
+                LocateRegistry.getRegistry("36.50.135.242", 1099);
+        ObjectService service =
+                (ObjectService) registry.lookup("RMIObjectService");
+
+        TicketSla t = (TicketSla) service.requestObject(MSV, QID);
+
+        String p = t.getPriority();
+        int hours = t.getOpenedHoursAgo();
+        int limit = 72;
+
+        switch (p) {
+            case "CRITICAL": limit = 2; break;
+            case "HIGH": limit = 8; break;
+            case "MEDIUM": limit = 24; break;
+            case "LOW": limit = 72; break;
+        }
+
+        t.setBreached(hours > limit);
+
+        if (!t.isBreached()) {
+            t.setAction("MONITOR");
+        } else if (p.equals("CRITICAL") || hours > 96) {
+            t.setAction("ESCALATE_L2");
+        } else {
+            t.setAction("ESCALATE_L1");
+        }
+
+        service.submitObject(MSV, QID, t);
+    }
+}
+
+
+
+// TicketsSla.java
+
+
+package RMI;
+
+import java.io.Serializable;
+
+public class TicketSla implements Serializable {
+
+    private static final long serialVersionUID = 20260517L;
+
+    private String ticketId;
+    private String priority;
+    private int openedHoursAgo;
+    private boolean breached;
+    private String action;
+
+    public TicketSla() {}
+
+    public TicketSla(String ticketId, String priority, int openedHoursAgo) {
+        this.ticketId = ticketId;
+        this.priority = priority;
+        this.openedHoursAgo = openedHoursAgo;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public int getOpenedHoursAgo() {
+        return openedHoursAgo;
+    }
+
+    public void setOpenedHoursAgo(int openedHoursAgo) {
+        this.openedHoursAgo = openedHoursAgo;
+    }
+
+    public boolean isBreached() {
+        return breached;
+    }
+
+    public void setBreached(boolean breached) {
+        this.breached = breached;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    
+}
