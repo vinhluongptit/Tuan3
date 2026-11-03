@@ -1,0 +1,37 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication6;
+import RMI.CharacterService;
+import java.net.URI;
+import java.rmi.registry.*;
+import java.util.*;
+
+
+public class JavaApplication6 {
+
+    public static void main(String[] args) throws Exception{
+        String studentCode = "B23DCCN932";
+        String qcode = "8tTsDCLB";
+        
+        Registry registry = LocateRegistry.getRegistry("36.50.135.242", 1099);
+        CharacterService service = (CharacterService) registry.lookup("RMICharacterService");
+        String data = service.requestCharacter(studentCode, qcode);
+        String result = new URI(null, null, data, null).toASCIIString();
+        service.submitCharacter(studentCode, qcode, result);
+    }
+    
+}
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package RMI;
+import java.rmi.*;
+
+public interface CharacterService extends Remote {
+    public String requestCharacter(String studentCode, String qCode) throws RemoteException;
+    public void submitCharacter(String studentCode, String qCode, String strSubmit) throws RemoteException;
+}
